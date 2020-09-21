@@ -7,6 +7,9 @@ const opts = {
 let actionHandlers = {};
 let allHandlers = [];
 
+// Initialise state history
+state.init();
+
 // Create a client with our options defined at the top of the file
 let client = new tmi.client(opts);
 

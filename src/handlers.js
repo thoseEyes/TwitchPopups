@@ -7,8 +7,7 @@ actionHandlers['!alert'] = {
         return context.mod || (context["badges-raw"] != null && context["badges-raw"].startsWith("broadcaster"))
     },
     handle: (context, textContent) => {
-        const formattedText = popup.formatEmotes(textContent, context.emotes, true).substr(7);
-        popup.showText(formattedText, alertBg);
+        state.saveAndExecute(() => { action.alert(context, textContent) })
     }
 };
 
@@ -22,8 +21,7 @@ actionHandlers['!delete'] = {
         return context.mod || (context["badges-raw"] != null && context["badges-raw"].startsWith("broadcaster"))
     },
     handle: (context, textContent) => {
-        popup.delete();
-        // TODO : loop through objects calling its own state reset function
+        state.saveAndExecute(() => { action.delete() })
     }
 };
 
@@ -39,8 +37,7 @@ actionHandlers['!spotlight'] = {
         return context.mod || (context["badges-raw"] != null && context["badges-raw"].startsWith("broadcaster"))
     },
     handle: (context, textContent) => {
-        spotlightUser = textContent.substr(12).toLowerCase();
-        popup.showText(`${spotlightEmoji} Welcome ${spotlightUser} to the stage!`, spotlightBg);
+        state.saveAndExecute(() => { action.spotlight(textContent) })
     }
 };
 
@@ -50,8 +47,21 @@ allHandlers.push({
         return context.username === spotlightUser && (!textContent.startsWith('@') || textContent.startsWith('@' + twitchChannel))
     },
     handle: (context, textContent) => {
-        const formattedText = popup.formatEmotes(textContent, context.emotes, false);
-        console.log(formattedText);
-        popup.showText(`${spotlightEmoji} ${context['display-name']}: ${formattedText}`, spotlightBg);
+        const formattedText = popup.formatEmotes(textContent, context.emotes, false)
+        popup.showText(`${spotlightEmoji} ${context['display-name']}: ${formattedText}`, spotlightBg)
     }
 });
+
+
+// =======================================
+// Command: !undo
+// Description: Performs the previous command
+// =======================================
+actionHandlers['!undo'] = {
+    security: (context, textContent) => {
+        return context.mod || (context["badges-raw"] != null && context["badges-raw"].startsWith("broadcaster"))
+    },
+    handle: (context, textContent) => {
+        state.undo()
+    }
+};
